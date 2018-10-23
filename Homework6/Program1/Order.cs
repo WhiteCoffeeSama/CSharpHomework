@@ -1,0 +1,280 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
+using System.Text;
+using System.Threading.Tasks;
+
+
+namespace Program1
+{
+    class Test
+    {
+        static void Main(string[] args)
+        {
+            Order order1 = new Order("CC", 3, "iPhone");
+            Order order2 = new Order("PP", 1, "iPad");
+            Order order3 = new Order("EE", 9, "iPhone");
+
+            OrderService service = new OrderService();
+            service.AddOrder(order1);
+            service.AddOrder(order2);
+            service.AddOrder(order3);
+
+            Console.WriteLine("Xml文件");
+            service.ExportList();
+
+            List<Order> list = new List<Order>();
+            list = service.ImportList();
+
+            Console.WriteLine("原先的订单");
+            service.DisplayOrderList();
+            Console.WriteLine("新的订单");
+            OrderService.DisplayList(list);
+
+            Console.ReadLine();
+        }
+    }
+
+    public class Order
+    {
+        private string  client;                          //客户姓名
+        private int     num;                             //物品数量
+        private string  good;                            //物品
+        private string  id;                              //订单号
+        private OrderDetail detail;                      //细节
+
+        public string  Client
+        {
+            set { client = value; }
+            get { return client; }
+        }
+        public int     Num
+        {
+            set { num = value; }
+            get { return num; }
+        }
+        public string  Good
+        {
+            set { good = value; }
+            get { return good; }
+        }
+        public string  ID
+        {
+            set { id = value; }
+            get { return id; }
+        }
+        public OrderDetail Detail
+        {
+            set { detail = new OrderDetail(Good); }
+            get { return detail; }
+        }
+
+        static int IDSuffix = 124;                       //ID后缀
+
+        public Order() { }
+        public Order(string client, int num, string good)
+        {
+            this.Client = client;
+            this.Num = num;
+            this.Good = good;
+            this.ID = "88459" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + IDSuffix.ToString();
+            this.Detail = new OrderDetail(this.Good);
+            IDSuffix += 19;
+        }
+    }
+
+    public class OrderDetail
+    {
+        private string[] good;                                                         //商品属性
+
+        private string[] keysOfGoodDetail =
+        {
+            "Name", "Price", "Barcode"
+        };                                        //商品属性关键字
+
+        List<string[]> goods = new List<string[]>()
+        {
+            new string[] {"iPhone",  "1234", "123456789"},
+            new string[] {"iPad",    "2345", "234567891"},
+            new string[] {"Sumsung", "1111", "345678912"}
+        };                                //商品清单
+
+        public OrderDetail() { }
+        public OrderDetail(string name)
+        {
+            good = this[name];
+        }
+
+        public string[] this[string key]
+        {
+            get
+            {
+                foreach(string[] good in goods)
+                {
+                    if (good[0] == key)
+                        return good;
+                }
+                return null;
+            }
+        }                                            //通过    商品名称    获取    商品细节
+        
+        public string this[string key1, string key2]
+        {
+            get
+            {
+                foreach (string[] good in goods)
+                    if (good[0] == key1)
+                    {
+                        int i = 0;
+                        for (; i < keysOfGoodDetail.Length; i++)
+                            if (key2 == keysOfGoodDetail[i])
+                                break;
+                        if (i == 3) return null;
+                        return good[i];
+                    }
+                return null;
+            }
+        }                                //通过    商品名称    与      Price或Barcode     获取      价格      或      二维码    //应使用Dictionary或Hashtable，但是忘记了
+
+        public string GetInformation(string key1, string key2)
+        {
+            foreach (string[] good in goods)
+                if (good[0] == key1)
+                {
+                    int i = 0;
+                    for (; i < keysOfGoodDetail.Length; i++)
+                        if (key2 == keysOfGoodDetail[i])
+                            break;
+                    if (i == 3) return null;
+                    return good[i];
+                }
+            return null;
+        }                      //通过    商品名称    与      Price或Barcode     获取      价格      或      二维码
+    }
+
+    [Serializable]
+    public class OrderService
+    {
+        private List<Order> list;                                                       //订单
+
+        static XmlSerializer xmlserList = new XmlSerializer(typeof(List<Order>));       //XmlSerializer
+
+        static string xmlFileNameList = "OrderServiceList.xml";                         //xml文件
+
+        public OrderService()
+        {
+            list = new List<Order>();
+        }                                                        //构造
+
+        public void AddOrder(Order order)
+        {
+            list.Add(order);
+        }                                            //添加订单
+
+        public bool DeleteOrder(string id)
+        {
+            foreach (Order order in list)
+                if (order.ID == id)
+                {
+                    list.Remove(order);
+                    return true;
+                }
+            return false;
+            //throw new DefaultInfluenceOrder("删除失败!");
+        }                                           //删除订单
+
+        public bool DisplayOrderList()
+        {
+            if(list.Count > 0)
+            {
+                Console.WriteLine("No\tName\tPrice\tCount\tID\t\t\tTotal\n");
+                for (int i = 0; i < list.Count; i++)
+                    Console.WriteLine((i + 1).ToString() + "\t" + list[i].Good + "\t" + list[i].Detail[list[i].Good, "Price"] + "\t" + list[i].Num + "\t" + list[i].ID + "\t" + (Int32.Parse(list[i].Detail[list[i].Good, "Price"]) * list[i].Num).ToString() + "\n");
+                return true;
+            }
+            else
+            {
+                return false;
+                //throw new DefaultInfluenceOrder("订单为空!");
+            }
+        }                                               //展示订单
+
+        public static bool DisplayList(List<Order> list)
+        {
+            if(list.Count > 0)
+            {
+                Console.WriteLine("No\tName\tPrice\tCount\tID\t\t\tTotal\n");
+                for (int i = 0; i < list.Count; i++)
+                    Console.WriteLine((i + 1).ToString() + "\t" + list[i].Good + "\t" + list[i].Detail[list[i].Good, "Price"] + "\t" + list[i].Num + "\t" + list[i].ID + "\t" + (Int32.Parse(list[i].Detail[list[i].Good, "Price"]) * list[i].Num).ToString() + "\n");
+                return true;
+            }
+            else
+            {
+                return false;
+                //throw new DefaultInfluenceOrder("订单为空，展示失败！");
+            }
+        }                             //展示List<Order>
+
+        public void ExportList()
+        {
+            FileStream fs = new FileStream(xmlFileNameList, FileMode.Create);
+            xmlserList.Serialize(fs, list);
+            fs.Close();
+
+            string xml = File.ReadAllText(xmlFileNameList);
+            Console.WriteLine(xml);
+        }                                                     //转为xml文件     typeof(List<Order>)
+
+        public List<Order> ImportList()
+        {
+            List<Order> listImport = new List<Order>();
+            FileStream fs = new FileStream(xmlFileNameList, FileMode.Open);
+
+            listImport = xmlserList.Deserialize(fs) as List<Order>;
+
+            return listImport;
+        }                                              //转为List<Order>
+
+        ////typeof(Order)，失败
+        //static XmlSerializer xmlser = new XmlSerializer(typeof(Order));                 //XmlSerializer
+        //static string xmlFileName = "OrderService.xml";                                 //xml文件
+        //public void Export()
+        //{
+        //    FileStream fs = new FileStream(xmlFileName, FileMode.Create);
+        //    foreach (Order order in list)
+        //        xmlser.Serialize(fs, order);
+        //    fs.Close();
+
+        //    string xml = File.ReadAllText(xmlFileName);
+        //    Console.WriteLine(xml);
+        //}
+        //public List<Order> Import()
+        //{
+        //    //List<Order> listImport = new List<Order>();
+        //    //FileStream fs = new FileStream(xmlFileName, FileMode.Open);
+
+        //    ////Order[] order = xmlser.Deserialize(fs) as Order[];
+
+        //    ////foreach(Order o in order)
+        //    ////    listImport.Add(o);
+
+        //    //return listImport;
+
+        //    return null;
+        //}
+
+    }
+}
+
+public class DefaultInfluenceOrder : ApplicationException
+{
+    public DefaultInfluenceOrder(string message)
+        : base(message)
+    {
+
+    }
+}
