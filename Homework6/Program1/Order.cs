@@ -35,17 +35,26 @@ namespace Program1
             Console.WriteLine("新的订单");
             OrderService.DisplayList(list);
 
+            Console.WriteLine("iPhone");
+            List<Order> list2 = new List<Order>();
+            list2 = service.SearchOrderLinqByGood("iPhone");
+            OrderService.DisplayList(list2);
+
+            Console.WriteLine("Change Count of iPhone");
+            service.ChangeOrder(order1.ID, 30);
+            service.DisplayOrderList();
+
             Console.ReadLine();
         }
     }
 
     public class Order
     {
-        private string  client;                          //客户姓名
-        private int     num;                             //物品数量
-        private string  good;                            //物品
-        private string  id;                              //订单号
-        private OrderDetail detail;                      //细节
+        private string  client;                                                        //客户姓名
+        private int     num;                                                           //物品数量
+        private string  good;                                                          //物品
+        private string  id;                                                            //订单号
+        private OrderDetail detail;                                                    //细节
 
         public string  Client
         {
@@ -73,9 +82,9 @@ namespace Program1
             get { return detail; }
         }
 
-        static int IDSuffix = 124;                       //ID后缀
+        static int IDSuffix = 124;                                                     //ID后缀
 
-        public Order() { }
+        public Order() { }                                                             //无参构造
         public Order(string client, int num, string good)
         {
             this.Client = client;
@@ -84,7 +93,7 @@ namespace Program1
             this.ID = "88459" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + IDSuffix.ToString();
             this.Detail = new OrderDetail(this.Good);
             IDSuffix += 19;
-        }
+        }                           //有参构造
     }
 
     public class OrderDetail
@@ -187,13 +196,70 @@ namespace Program1
             //throw new DefaultInfluenceOrder("删除失败!");
         }                                           //删除订单
 
+        public List<Order> SearchOrderByID(string id)
+        {
+            List<Order> list = new List<Order>();
+
+            foreach (Order order in this.list)
+                if (order.ID == id)
+                    list.Add(order);
+ 
+            return list ;
+        }                                //通过ID获得订单
+
+        public List<Order> SearchOrderByGood(string good)
+        {
+            List<Order> list = new List<Order>();
+
+            foreach (Order order in this.list)
+                if (order.Good == good)
+                    list.Add(order);
+
+            return list;
+        }                            //通过商品名称获得订单
+
+        public List<Order> SearchOrderLinqByGood(string good)
+        {
+            List<Order> list = new List<Order>();
+
+            list = this.list
+                .Where(order => order.Good == good)
+                .Select(order => order)
+                .ToList();
+
+            //list.Add(
+            //    this.list
+            //    .Where(order => order.Good == good)
+            //    .Select(order => order)
+            //    .ToList());
+
+            return list;
+        }                        //通过商品名称获得订单
+
+        public bool ChangeOrder(string id, int newNum)
+        {
+            
+            List<Order> list = new List<Order>();
+            list = SearchOrderByID(id);
+
+            if (list.Count == 0) return false;
+            if(newNum == 0)
+            {
+                DeleteOrder(id);
+                return false;
+            }
+            list[0].Num = newNum;
+
+            return true;
+        }                               //改变购买商品的数量
+
         public bool DisplayOrderList()
         {
             if(list.Count > 0)
             {
-                Console.WriteLine("No\tName\tPrice\tCount\tID\t\t\tTotal\n");
+                Console.WriteLine("No\tName\tPrice\tCount\tID\t\t\tTotal\tClient\n");
                 for (int i = 0; i < list.Count; i++)
-                    Console.WriteLine((i + 1).ToString() + "\t" + list[i].Good + "\t" + list[i].Detail[list[i].Good, "Price"] + "\t" + list[i].Num + "\t" + list[i].ID + "\t" + (Int32.Parse(list[i].Detail[list[i].Good, "Price"]) * list[i].Num).ToString() + "\n");
+                    Console.WriteLine((i + 1).ToString() + "\t" + list[i].Good + "\t" + list[i].Detail[list[i].Good, "Price"] + "\t" + list[i].Num + "\t" + list[i].ID + "\t" + (Int32.Parse(list[i].Detail[list[i].Good, "Price"]) * list[i].Num).ToString() + "\t" + list[i].Client + "\n");
                 return true;
             }
             else
@@ -207,9 +273,9 @@ namespace Program1
         {
             if(list.Count > 0)
             {
-                Console.WriteLine("No\tName\tPrice\tCount\tID\t\t\tTotal\n");
+                Console.WriteLine("No\tName\tPrice\tCount\tID\t\t\tTotal\tClient\n");
                 for (int i = 0; i < list.Count; i++)
-                    Console.WriteLine((i + 1).ToString() + "\t" + list[i].Good + "\t" + list[i].Detail[list[i].Good, "Price"] + "\t" + list[i].Num + "\t" + list[i].ID + "\t" + (Int32.Parse(list[i].Detail[list[i].Good, "Price"]) * list[i].Num).ToString() + "\n");
+                    Console.WriteLine((i + 1).ToString() + "\t" + list[i].Good + "\t" + list[i].Detail[list[i].Good, "Price"] + "\t" + list[i].Num + "\t" + list[i].ID + "\t" + (Int32.Parse(list[i].Detail[list[i].Good, "Price"]) * list[i].Num).ToString() + "\t" + list[i].Client + "\n");
                 return true;
             }
             else
