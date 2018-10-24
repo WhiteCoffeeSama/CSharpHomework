@@ -44,6 +44,10 @@ namespace Program1
             service.ChangeOrder(order1.ID, 30);
             service.DisplayOrderList();
 
+            Console.WriteLine("Change the Price of Order1 to 9999");
+            service.SearchOrderByID(order1.ID).Detail[service.SearchOrderByID(order1.ID).Good, "Price"] = 9999.ToString();
+            service.DisplayOrderList();
+
             Console.ReadLine();
         }
     }
@@ -133,6 +137,19 @@ namespace Program1
         
         public string this[string key1, string key2]
         {
+            set
+            {
+                foreach (string[] good in goods)
+                    if (good[0] == key1)
+                    {
+                        int i = 0;
+                        for (; i < keysOfGoodDetail.Length; i++)
+                            if (key2 == keysOfGoodDetail[i])
+                                break;
+                        if (i >= 2) return;
+                        good[i] = value.ToString();
+                    }
+            }
             get
             {
                 foreach (string[] good in goods)
@@ -147,7 +164,7 @@ namespace Program1
                     }
                 return null;
             }
-        }                                //通过    商品名称    与      Price或Barcode     获取      价格      或      二维码    //应使用Dictionary或Hashtable，但是忘记了
+        }                                //通过    商品名称    与      Price或Barcode     获取/修改      价格      或      二维码    //应使用Dictionary或Hashtable，但是忘记了
 
         public string GetInformation(string key1, string key2)
         {
@@ -196,16 +213,14 @@ namespace Program1
             //throw new DefaultInfluenceOrder("删除失败!");
         }                                           //删除订单
 
-        public List<Order> SearchOrderByID(string id)
-        {
-            List<Order> list = new List<Order>();
-
+        public Order SearchOrderByID(string id)
+        {           
             foreach (Order order in this.list)
                 if (order.ID == id)
-                    list.Add(order);
- 
-            return list ;
-        }                                //通过ID获得订单
+                    return order;
+
+            return null;
+        }                                      //通过ID获得订单
 
         public List<Order> SearchOrderByGood(string good)
         {
@@ -237,18 +252,15 @@ namespace Program1
         }                        //通过商品名称获得订单
 
         public bool ChangeOrder(string id, int newNum)
-        {
-            
-            List<Order> list = new List<Order>();
-            list = SearchOrderByID(id);
+        {           
+            Order order = new Order();
+            order = SearchOrderByID(id);
+            order.Num = newNum;
 
-            if (list.Count == 0) return false;
             if(newNum == 0)
             {
                 DeleteOrder(id);
-                return false;
             }
-            list[0].Num = newNum;
 
             return true;
         }                               //改变购买商品的数量
