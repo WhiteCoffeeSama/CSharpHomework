@@ -230,7 +230,7 @@ namespace Program1
 
         static XmlSerializer xmlserList = new XmlSerializer(typeof(List<Order>));       //XmlSerializer
 
-        static string xmlFileNameList = "OrderServiceList.xml";                         //xml文件
+        static string xmlFileNameList = "../../OrderServiceList.xml";                   //xml文件
 
         public OrderService()
         {

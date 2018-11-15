@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -27,6 +28,8 @@ namespace Program2
             InitializeComponent();
             InitOrderService();
             InitComboBox();
+
+            this.textBox2.Enabled = false;
         }
 
         public Form2(Form1 form1, string id)
@@ -48,6 +51,8 @@ namespace Program2
             this.label5.Text = order.Price.ToString();
             //改总价
             this.label7.Text = order.Total.ToString();
+            //改电话好吗
+            this.textBox2.Text = order.Tel.ToString();
             //绑定Form1对象
             this.form1 = form1;
         }
@@ -77,12 +82,19 @@ namespace Program2
             service.List = service.ImportList();
         }
 
-        //按下按钮
+        //按下按钮，验证数据
         private void button1_Click(object sender, EventArgs e)
         {
-            if(textBox1.Enabled)
+            bool ok = Regex.IsMatch(textBox2.Text, @"^\+86-1[0-9]{10}");
+            if (!ok)
             {
-                if (order != null && textBox1.Text != "")
+                MessageBox.Show("电话号有误，请修改");
+                return;
+            }
+
+            if (textBox1.Enabled)
+            {
+                if (order != null && textBox1.Text != "" && textBox2.Text != "")
                 {
                     service.AddOrder(order);
                     service.ExportList();
@@ -92,6 +104,8 @@ namespace Program2
                     this.Close();
 
                 }
+                else if (textBox2.Text == "")
+                    MessageBox.Show("请输入手机号！");
                 else if (textBox1.Text == "" || order == null)
                     MessageBox.Show("这还不是个订单！");
             }
@@ -109,6 +123,7 @@ namespace Program2
         //用户名
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
+            this.textBox2.Enabled = true;
             if (textBox1.Text == "")
             {
                 MessageBox.Show("请输入客户姓名！");
@@ -143,6 +158,12 @@ namespace Program2
                 label5.Text = order.Price.ToString();
                 label7.Text = order.Total.ToString();
             }
+        }
+
+        //电话号
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            order.Tel = textBox2.Text;
         }
 
         private void Form2_Load(object sender, EventArgs e)

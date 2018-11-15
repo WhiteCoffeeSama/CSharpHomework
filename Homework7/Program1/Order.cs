@@ -7,6 +7,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.XPath;
+using System.Xml.Xsl;
 
 
 namespace Program1
@@ -60,6 +63,8 @@ namespace Program1
         private string  id;                                                            //订单号
         private OrderDetail detail;                                                    //细节
 
+        private string tel;                                                            //客户电话号码
+
         public string  Client
         {
             set { client = value; }
@@ -86,6 +91,12 @@ namespace Program1
             get { return detail; }
         }
 
+        public string Tel
+        {
+            set => tel = value;
+            get => tel;
+        }
+
         public int Price
         {
             set { Detail[Good, "price"] = value.ToString(); }
@@ -99,20 +110,29 @@ namespace Program1
             get { return Price * Num; }
         }
 
-
-
         static int IDSuffix = 124;                                                     //ID后缀
 
         public Order() { }                                                             //无参构造
-        public Order(string client, int num, string good)
+        public Order(string client, int num, string good)                              //有参构造
         {
             this.Client = client;
             this.Num = num;
             this.Good = good;
-            this.ID = "88459" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + IDSuffix.ToString();
+            this.ID = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + IDSuffix.ToString();
+            //this.ID = "88459" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + IDSuffix.ToString();
             this.Detail = new OrderDetail(this.Good);
             IDSuffix += 19;
-        }                           //有参构造
+        }                           
+        public Order(string client, int num, string good, string tel)                  //有电话号
+        {
+            this.Client = client;
+            this.Num = num;
+            this.Good = good;
+            this.ID = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + IDSuffix.ToString();
+            this.Detail = new OrderDetail(this.Good);
+            this.Tel = tel;
+            IDSuffix += 19;
+        }
     }
 
     public class OrderDetail
@@ -210,7 +230,7 @@ namespace Program1
 
         static XmlSerializer xmlserList = new XmlSerializer(typeof(List<Order>));       //XmlSerializer
 
-        static string xmlFileNameList = "OrderServiceList.xml";                         //xml文件
+        static string xmlFileNameList = "../../OrderServiceList.xml";                   //xml文件
 
         public OrderService()
         {
@@ -282,7 +302,7 @@ namespace Program1
                 .ToList();
 
             return list;
-        }                    //通过顾客称获得订单
+        }                    //通过顾客名称获得订单
 
         public List<Order> SearchOrderByTwoKeys(string key1, string key2)               //查找
         {
@@ -389,12 +409,12 @@ namespace Program1
             return true;
         }
 
-        public void ChangeClient(Order order, string key)                               //修改买家，防止先选物品在填写名字
+        public void ChangeClient(Order order, string key)                               //修改买家名字，防止先选物品在填写名字
         {
             order.Client = key;
         }
 
-        public bool ChangeOrder(string id, int newNum)
+        public bool ChangeOrder(string id, int newNum)                                  //改变购买商品的数量
         {           
             Order order = new Order();
             order = SearchOrderByID(id);
@@ -406,9 +426,9 @@ namespace Program1
             }
 
             return true;
-        }                               //改变购买商品的数量
+        }                               
 
-        public bool DisplayOrderList()
+        public bool DisplayOrderList()                                                  //展示订单
         {
             if(list.Count > 0)
             {
@@ -422,9 +442,9 @@ namespace Program1
                 return false;
                 //throw new DefaultInfluenceOrder("订单为空!");
             }
-        }                                               //展示订单
+        }                                               
 
-        public static bool DisplayList(List<Order> list)
+        public static bool DisplayList(List<Order> list)                                //展示List<Order>
         {
             if(list.Count > 0)
             {
@@ -438,7 +458,7 @@ namespace Program1
                 return false;
                 //throw new DefaultInfluenceOrder("订单为空，展示失败！");
             }
-        }                             //展示List<Order>
+        }                             
 
         public void ExportList()
         {
@@ -461,6 +481,33 @@ namespace Program1
 
             return listImport;
         }                                              //转为List<Order>
+
+        public void TransformToHTML()                                                   //转为HTML文件，但是XSLT与XML必须在Debug当中，因为我蠢，所以不会声明地址
+        {
+            try
+            {
+                XmlDocument doc = new XmlDocument();
+                doc.Load(xmlFileNameList);
+
+                XPathNavigator nav = doc.CreateNavigator();
+                nav.MoveToRoot();
+
+                XslCompiledTransform xt = new XslCompiledTransform();
+                xt.Load("../../XSLT00.xslt");
+
+                FileStream outFileStream = File.OpenWrite("../../OrderList.html");
+                XmlTextWriter writer = new XmlTextWriter(outFileStream, System.Text.Encoding.UTF8);
+                xt.Transform(nav, null, writer);
+            }
+            catch (XmlException e)
+            {
+                Console.WriteLine("XML Exception:" + e.ToString());
+            }
+            catch (XsltException e)
+            {
+                Console.WriteLine("XSLT Exception:" + e.ToString());
+            }
+        }
 
         ////typeof(Order)，失败
         //static XmlSerializer xmlser = new XmlSerializer(typeof(Order));                 //XmlSerializer
@@ -489,7 +536,6 @@ namespace Program1
 
         //    return null;
         //}
-
     }
 
     public class BitArray

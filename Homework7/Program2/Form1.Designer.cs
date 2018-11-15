@@ -40,10 +40,12 @@ namespace Program2
             this.numDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.priceDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.totalDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Tel = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.listBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.bindingOrderService = new System.Windows.Forms.BindingSource(this.components);
             this.panelShowList = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.buttonToChange = new System.Windows.Forms.Button();
             this.labelID = new System.Windows.Forms.Label();
@@ -89,13 +91,14 @@ namespace Program2
             this.numDataGridViewTextBoxColumn,
             this.priceDataGridViewTextBoxColumn,
             this.totalDataGridViewTextBoxColumn,
+            this.Tel,
             this.ID});
             this.dataGridView1.DataSource = this.listBindingSource;
             this.dataGridView1.Location = new System.Drawing.Point(28, 55);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(10, 3, 10, 3);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowTemplate.Height = 27;
-            this.dataGridView1.Size = new System.Drawing.Size(992, 404);
+            this.dataGridView1.Size = new System.Drawing.Size(1018, 404);
             this.dataGridView1.TabIndex = 1;
             this.dataGridView1.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellClick);
             this.dataGridView1.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellValueChanged);
@@ -104,7 +107,6 @@ namespace Program2
             // 
             this.Column1.HeaderText = "Column1";
             this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
             // 
             // clientDataGridViewTextBoxColumn
             // 
@@ -125,7 +127,6 @@ namespace Program2
             this.numDataGridViewTextBoxColumn.DataPropertyName = "Num";
             this.numDataGridViewTextBoxColumn.HeaderText = "Num";
             this.numDataGridViewTextBoxColumn.Name = "numDataGridViewTextBoxColumn";
-            this.numDataGridViewTextBoxColumn.ReadOnly = true;
             // 
             // priceDataGridViewTextBoxColumn
             // 
@@ -141,6 +142,13 @@ namespace Program2
             this.totalDataGridViewTextBoxColumn.Name = "totalDataGridViewTextBoxColumn";
             this.totalDataGridViewTextBoxColumn.ReadOnly = true;
             // 
+            // Tel
+            // 
+            this.Tel.DataPropertyName = "Tel";
+            this.Tel.HeaderText = "Tel";
+            this.Tel.Name = "Tel";
+            this.Tel.ReadOnly = true;
+            // 
             // ID
             // 
             this.ID.DataPropertyName = "ID";
@@ -150,15 +158,16 @@ namespace Program2
             // 
             // listBindingSource
             // 
-            this.listBindingSource.DataMember = "List";
             this.listBindingSource.DataSource = this.bindingOrderService;
             // 
             // bindingOrderService
             // 
+            this.bindingOrderService.DataMember = "List";
             this.bindingOrderService.DataSource = typeof(Program1.OrderService);
             // 
             // panelShowList
             // 
+            this.panelShowList.Controls.Add(this.button2);
             this.panelShowList.Controls.Add(this.button1);
             this.panelShowList.Controls.Add(this.buttonToChange);
             this.panelShowList.Controls.Add(this.labelID);
@@ -176,6 +185,17 @@ namespace Program2
             this.panelShowList.Size = new System.Drawing.Size(1065, 615);
             this.panelShowList.TabIndex = 2;
             this.panelShowList.Paint += new System.Windows.Forms.PaintEventHandler(this.panelShowList_Paint);
+            // 
+            // button2
+            // 
+            this.button2.Font = new System.Drawing.Font("宋体", 22F);
+            this.button2.Location = new System.Drawing.Point(903, 9);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(143, 40);
+            this.button2.TabIndex = 12;
+            this.button2.Text = "HTML";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // button1
             // 
@@ -249,6 +269,7 @@ namespace Program2
             this.labelSelectedText.Size = new System.Drawing.Size(83, 34);
             this.labelSelectedText.TabIndex = 6;
             this.labelSelectedText.Text = "选中";
+            this.labelSelectedText.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelSelectedRow
             // 
@@ -331,15 +352,17 @@ namespace Program2
         private System.Windows.Forms.Button addNewOrder;
         private System.Windows.Forms.Button delOrder;
         private Label labelID;
+        private Button buttonToChange;
+        private Button button1;
         private DataGridViewTextBoxColumn Column1;
         private DataGridViewTextBoxColumn clientDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn goodDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn numDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn priceDataGridViewTextBoxColumn;
         private DataGridViewTextBoxColumn totalDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn Tel;
         private DataGridViewTextBoxColumn ID;
-        private Button buttonToChange;
-        private Button button1;
+        private Button button2;
     }
 }
 

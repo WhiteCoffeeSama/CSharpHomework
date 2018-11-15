@@ -34,7 +34,7 @@ namespace Program2
         //初始化订单
         private void InitOrderList()
         {
-            if(File.Exists(@"OrderServiceList.xml"))
+            if(File.Exists(@"../../OrderServiceList.xml"))
             {
                 service.List = service.ImportList();
             }

@@ -27,25 +27,34 @@ namespace Program2
             InitComboBosToSearch();
 
             bindingOrderService.DataSource = service;
+
             dataGridView1.Columns[0].Visible = false;
         }
 
         //初始化订单
         private void InitOrderList()
         {
-            if(File.Exists(@"OrderServiceList.xml"))
+            if(File.Exists(@"../../OrderServiceList.xml"))
             {
                 service.List = service.ImportList();
             }
-            else
+            if(service.List.Count == 0)
             {
-                Order order1 = new Order("CC", 3, "iPhone");
-                Order order2 = new Order("PP", 1, "iPad");
-                Order order3 = new Order("EE", 9, "iPhone");
+                //Order order1 = new Order("CC", 3, "iPhone");
+                //Order order2 = new Order("PP", 1, "iPad");
+                //Order order3 = new Order("EE", 9, "iPhone");
 
-                service.AddOrder(order1);
-                service.AddOrder(order2);
-                service.AddOrder(order3);
+                //service.AddOrder(order1);
+                //service.AddOrder(order2);
+                //service.AddOrder(order3);
+
+                Order order4 = new Order("CC", 3, "iPhone", "+86-15827080000");
+                Order order5 = new Order("PP", 1, "iPad", "+86-18966874511");
+                Order order6 = new Order("EE", 9, "iPhone", "+86-15569875325");
+
+                service.AddOrder(order4);
+                service.AddOrder(order5);
+                service.AddOrder(order6);
 
                 list = service.List;
                 service.ExportList();
@@ -70,46 +79,14 @@ namespace Program2
                 dataGridView1.Rows[i].Visible = true;
 
             SearchList();
-
-            ////若没选择项目，则返回
-            //if (comboBoxToSearch.SelectedItem == null)
-            //    return;
-            ////选择的项目
-            //string key1 = comboBoxToSearch.SelectedItem.ToString();
-            ////输入的关键字
-            //string key2 = textBoxToSearch.Text.ToString();
-            ////如果关键字为空，则返回
-            //if (key2 == "")
-            //    bindingOrderService.DataSource = this.service;
-            //else
-            //{
-            //    CurrencyManager cm = (CurrencyManager)BindingContext[this.dataGridView1.DataSource];
-            //    cm.SuspendBinding();
-
-            //    //通过BitArray来设置这一行是否可见  主要是为了删除查到的订单方便一些
-            //    int[] bits = service.SearchOrderBySettingVisible(key1, key2);
-            //    for (int i = 0; i < service.List.Count; i++)
-            //    {
-            //        //如果不是，则不可见
-            //        if (bits[i] == 0)
-            //            dataGridView1.Rows[i].Visible = false;
-            //    }
-
-            //    cm.ResumeBinding();
-
-            //    ////建立一个新的OrderService，并绑定
-            //    //OrderService service = new OrderService();
-            //    //list = this.service.SearchOrderByTwoKeys(key1, key2);
-            //    //foreach (Order order in list)
-            //    //    service.AddOrder(order);
-            //    //bindingOrderService.DataSource = service;
-            //}
         }
 
         //鼠标点击了列表
         private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex < 0)
+                return;
+            if (dataGridView1.Columns[e.ColumnIndex].HeaderText == null || dataGridView1.CurrentCell.Value == null)
                 return;
             string str1 = dataGridView1.Columns[e.ColumnIndex].HeaderText.ToString() + ":";
             string str2 = dataGridView1.CurrentCell.Value.ToString();
@@ -207,6 +184,12 @@ namespace Program2
 
                 cm.ResumeBinding();
             }
+        }
+
+        //按下HTML按钮，生成HTML文件
+        private void button2_Click(object sender, EventArgs e)
+        {
+            service.TransformToHTML();
         }
 
         //多余

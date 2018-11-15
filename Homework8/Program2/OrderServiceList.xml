@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<ArrayOfOrder xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Order>
+    <Client>CC</Client>
+    <Num>3</Num>
+    <Good>iPhone</Good>
+    <ID>20181115223449124</ID>
+    <Detail />
+    <Tel>+86-15827080000</Tel>
+    <Price>1234</Price>
+  </Order>
+  <Order>
+    <Client>PP</Client>
+    <Num>1</Num>
+    <Good>iPad</Good>
+    <ID>20181115223449143</ID>
+    <Detail />
+    <Tel>+86-18966874511</Tel>
+    <Price>2345</Price>
+  </Order>
+  <Order>
+    <Client>EE</Client>
+    <Num>9</Num>
+    <Good>iPhone</Good>
+    <ID>20181115223449162</ID>
+    <Detail />
+    <Tel>+86-15569875325</Tel>
+    <Price>1234</Price>
+  </Order>
+</ArrayOfOrder>
