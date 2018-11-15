@@ -493,9 +493,9 @@ namespace Program1
                 nav.MoveToRoot();
 
                 XslCompiledTransform xt = new XslCompiledTransform();
-                xt.Load("XSLT00.xslt");
+                xt.Load("../../XSLT00.xslt");
 
-                FileStream outFileStream = File.OpenWrite("OrderList.html");
+                FileStream outFileStream = File.OpenWrite("../../OrderList.html");
                 XmlTextWriter writer = new XmlTextWriter(outFileStream, System.Text.Encoding.UTF8);
                 xt.Transform(nav, null, writer);
             }

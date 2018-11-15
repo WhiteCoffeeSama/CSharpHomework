@@ -1,3 +1,0 @@
-1. Order、OrderDetail、OrderService在Program1中。
-2. 需要将XSLT00.xslt文件放置在Program2地bin/Debug文件夹中，我不知道如何声明文件地址，忘原谅。
-3. 我发现了我的错误，即应该具有一名顾客，多个物品地筛选，但是我没有这个功能，只能通过搜索顾客来显示那种表格。
